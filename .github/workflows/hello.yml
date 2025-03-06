@@ -2,19 +2,47 @@ name: C/C++ CI
 
 on: [push]
 
+permissions:
+  contents: write
+ 
 jobs:
   ubuntu-build:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
-    - name: Install g++
+      uses: actions/checkout@v2.0.0
+    - name: Install g++ compiler
       run: sudo apt-get update && sudo apt-get install -y g++
+    - name: Verify g++ version
+      run: g++ --version
     - name: Build project
-      run: g++ -o my_program hello.cpp
-    - name: Upload artifact
+      run: |
+        g++ -o my_program index.cpp
+    - name: 'Upload Artifact'
       uses: actions/upload-artifact@v4
       with:
-        name: my-program-executable
-        path: my_program
-    
+       name: my-artifact
+       path: my_program        
+    - name: Configure git to use GitHub Actions token
+      run: |
+          git config --local user.email "mane.ghudratyan@gmail.com"
+          git config --local user.name "ManGhudratyan"
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+
+    - name: Create Tag
+      run: |
+        git tag -a "v${{ github.run_number }}" -m "Release 1.0.0"
+        git push origin "v${{ github.run_number }}"  
+
+    - name: 'Get Previous tag'
+      id: previous_tag
+      uses: "WyriHaximus/github-action-get-previous-tag@v1"
+      with:
+        fallback: 1.0.0
+     
+    - name: Release        
+      uses: softprops/action-gh-release@v1
+      with:
+          tag_name: ${{steps.previous_tag.outputs.tag}}
+          files: ${{steps.sign_app.outputs.signedReleaseFile}}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
