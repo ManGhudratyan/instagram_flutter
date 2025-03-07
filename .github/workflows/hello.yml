@@ -2,6 +2,9 @@ name: C/C++ CI
 
 on: [push]
 
+env:
+  file_name: index.cpp
+  
 permissions:
   contents: write
   
@@ -14,7 +17,7 @@ jobs:
     - name: Install g++
       run: sudo apt-get update && sudo apt-get install -y g++
     - name: Build project
-      run: g++ -o my_program hello.cpp
+      run: g++ -o my_program $file_name
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
