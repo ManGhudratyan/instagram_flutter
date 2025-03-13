@@ -1,53 +1,54 @@
 name: C/C++ CI
 
 on: 
-    workflow_dispatch:   
+  workflow_dispatch:   
 
-# env:
-#   file_name: hello.cpp
-  
 permissions:
   contents: write
-  
+
 jobs:
   ubuntu-build:
     runs-on: ubuntu-latest
     strategy:
-      matrix: 
+      matrix:
         file_name: [hello1.cpp, hello2.cpp, hello3.cpp]
         output_file_name: [my_program1, my_program2, my_program3]
     steps:
-    - name: Checkout
+    - name: Checkout code
       uses: actions/checkout@v3
+
     - name: Install g++
       run: sudo apt-get update && sudo apt-get install -y g++
+
     - name: Build project
       run: g++ -o ${{ matrix.output_file_name }} ${{ matrix.file_name }}
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: my-program-executable
-        path: my_program
+        name: ${{ matrix.output_file_name }}
+        path: ${{ matrix.output_file_name }}
+
     - name: Configure git to use GitHub Actions token
       run: |
-          git config --local user.email "mane.ghudratyan@gmail.com"
-          git config --local user.name "ManGhudratyan"
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+        git config --local user.email "mane.ghudratyan@gmail.com"
+        git config --local user.name "ManGhudratyan"
+        git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+
     - name: Create Tag
       run: |
         git tag -a "v${{ github.run_number }}" -m "Release 1.0.0"
-        git push origin "v${{ github.run_number }}"  
+        git push origin "v${{ github.run_number }}"
 
     - name: 'Get Previous tag'
       id: previous_tag
-      uses: "WyriHaximus/github-action-get-previous-tag@v1"
+      uses: WyriHaximus/github-action-get-previous-tag@v1
       with:
         fallback: 1.0.0
-     
-    - name: Release        
+
+    - name: Release
       uses: softprops/action-gh-release@v1
       with:
-          tag_name: ${{steps.previous_tag.outputs.tag}}
-          files: ${{steps.sign_app.outputs.signedReleaseFile}}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        tag_name: "v${{ github.run_number }}"
+        files: ${{ github.workspace }}/${{ matrix.output_file_name }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
