@@ -35,20 +35,4 @@ jobs:
         git config --local user.name "ManGhudratyan"
         git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
 
-    - name: Create Tag
-      run: |
-        git tag -a "v${{ github.run_number }}" -m "Release 1.0.0"
-        git push origin "v${{ github.run_number }}"
 
-    - name: 'Get Previous tag'
-      id: previous_tag
-      uses: WyriHaximus/github-action-get-previous-tag@v1
-      with:
-        fallback: 1.0.0
-
-    - name: Release
-      uses: softprops/action-gh-release@v1
-      with:
-        tag_name: "v${{ github.run_number }}"
-        files: ${{ github.workspace }}/${{ matrix.output_file_name }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
