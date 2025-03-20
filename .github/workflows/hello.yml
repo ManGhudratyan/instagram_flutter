@@ -9,35 +9,36 @@ permissions:
 jobs:
   ubuntu-build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - inputFile: hello1.cpp
+            outputFile: hello1.out
+          - inputFile: hello2.cpp
+            outputFile: hello2.out
+          - inputFile: hello3.cpp
+            outputFile: hello3.out
+
     steps:
     - name: Checkout
       uses: actions/checkout@v2.0.0
-
     - name: Install g++ compiler
       run: sudo apt-get update && sudo apt-get install -y g++
-
     - name: Verify g++ version
       run: g++ --version
-
-    - name: Build hello1.cpp -> hello1.out
+    - name: Build project
       run: |
-        g++ -o hello1.out hello1.cpp
-
-    - name: Build hello2.cpp -> hello2.out
-      run: |
-        g++ -o hello2.out hello2.cpp
-
-    - name: Build hello3.cpp -> hello3.out
-      run: |
-        g++ -o hello3.out hello3.cpp
-
+        input_file="${{ matrix.inputFile }}"
+        output_file="${{ matrix.outputFile }}"
+        echo "Building $input_file -> $output_file"
+        g++ -o "$output_file" "$input_file"
     - name: 'Upload Artifact'
       uses: actions/upload-artifact@v4
       with:
         name: my-artifact
-        path: my_program
-
+        path: my_program        
     - name: Configure git to use GitHub Actions token
       run: |
         git config --local user.email "mane.ghudratyan@gmail.com"
         git config --local user.name "ManGhudratyan"
+        git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
