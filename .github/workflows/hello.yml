@@ -9,16 +9,6 @@ permissions:
 jobs:
   ubuntu-build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        inpFiles: 
-          - hello1.cpp
-          - hello2.cpp
-          - hello3.cpp
-        outFiles:
-          - hello1.out
-          - hello2.out
-          - hello3.out
     steps:
     - name: Checkout
       uses: actions/checkout@v2.0.0
@@ -29,10 +19,17 @@ jobs:
     - name: Verify g++ version
       run: g++ --version
 
-    - name: Build project
+    - name: Build hello1.cpp -> hello1.out
       run: |
-        echo "Building ${{ matrix.inpFiles }} -> ${{ matrix.outFiles }}"
-        g++ -o ${{ matrix.outFiles }} ${{ matrix.inpFiles }}
+        g++ -o hello1.out hello1.cpp
+
+    - name: Build hello2.cpp -> hello2.out
+      run: |
+        g++ -o hello2.out hello2.cpp
+
+    - name: Build hello3.cpp -> hello3.out
+      run: |
+        g++ -o hello3.out hello3.cpp
 
     - name: 'Upload Artifact'
       uses: actions/upload-artifact@v4
