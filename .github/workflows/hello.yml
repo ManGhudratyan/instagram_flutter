@@ -1,38 +1,44 @@
 name: C/C++ CI
 
-on: 
-  workflow_dispatch:   
+on:
+ workflow_dispatch:
+
+
+# env:
+#   FILE_NAME: index.cpp
 
 permissions:
   contents: write
-
+ 
 jobs:
   ubuntu-build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        file_name: [hello1.cpp, hello2.cpp, hello3.cpp]
-        output_file_name: [my_program1, my_program2, my_program3]
+        # OUTPUT_FILE: [{in: hello1.cpp, out: hello1.out }, {in: hello2.cpp, out: hello2.out }, {in: hello3.cpp, out: hello3.out }]
+         files:
+          - hello1.cpp:hello1.out
+          - hello2.cpp:hello2.out
+          - hello3.cpp:hello3.out
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Install g++
+    - name: Checkout
+      uses: actions/checkout@v2.0.0
+    - name: Install g++ compiler
       run: sudo apt-get update && sudo apt-get install -y g++
-
+    - name: Verify g++ version
+      run: g++ --version
     - name: Build project
-      run: g++ -o ${{ matrix.output_file_name }} ${{ matrix.file_name }}
-
-    - name: Upload artifact
+      run: |
+         IFS=":" read -r input_file output_file <<< "${{ matrix.files }}"
+         echo "Building $input_file -> $output_file"
+         g++ -o $output_file $input_file
+           
+    - name: 'Upload Artifact'
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ matrix.output_file_name }}
-        path: ${{ matrix.output_file_name }}
-
+       name: my-artifact
+       path: my_program        
     - name: Configure git to use GitHub Actions token
       run: |
-        git config --local user.email "mane.ghudratyan@gmail.com"
-        git config --local user.name "ManGhudratyan"
-        git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
-
-
+          git config --local user.email "mane.ghudratyan@gmail.com"
+          git config --local user.name "ManGhudratyan"
