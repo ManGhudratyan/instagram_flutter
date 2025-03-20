@@ -11,18 +11,18 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        input_files:
+        inpFiles: 
           - hello1.cpp
           - hello2.cpp
           - hello3.cpp
-        output_files:
+        outFiles:
           - hello1.out
           - hello2.out
           - hello3.out
     steps:
     - name: Checkout
       uses: actions/checkout@v2.0.0
-      
+
     - name: Install g++ compiler
       run: sudo apt-get update && sudo apt-get install -y g++
 
@@ -31,8 +31,8 @@ jobs:
 
     - name: Build project
       run: |
-        echo "Building ${{ matrix.input_files }} -> ${{ matrix.output_files }}"
-        g++ -o ${{ matrix.output_files }} ${{ matrix.input_files }}
+        echo "Building ${{ matrix.inpFiles }} -> ${{ matrix.outFiles }}"
+        g++ -o ${{ matrix.outFiles }} ${{ matrix.inpFiles }}
 
     - name: 'Upload Artifact'
       uses: actions/upload-artifact@v4
