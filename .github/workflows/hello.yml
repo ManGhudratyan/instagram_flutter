@@ -1,7 +1,7 @@
 name: C/C++ CI
 
 on:
-  workflow_dispatch:
+  push
 
 permissions:
   contents: write
@@ -32,6 +32,7 @@ jobs:
         output_file="${{ matrix.outputFile }}"
         echo "Building $input_file -> $output_file"
         g++ -o "$output_file" "$input_file"
+        sleep 60
     - name: 'Upload Artifact'
       uses: actions/upload-artifact@v4
       with:
