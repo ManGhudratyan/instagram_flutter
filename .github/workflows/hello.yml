@@ -13,6 +13,7 @@ permissions:
 jobs:
   ubuntu-build:
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     strategy:
       matrix:
         include:
@@ -47,3 +48,4 @@ jobs:
         git config --local user.email "mane.ghudratyan@gmail.com"
         git config --local user.name "ManGhudratyan"
         git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+      if: ${{ success() }} 
