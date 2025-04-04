@@ -1,9 +1,9 @@
 name: C/C++ CI2
 
 on:
-    workflow_run:
-     workflows: ["C/C++ CI"]
-     types:
+  workflow_run:
+    workflows: ["C/C++ CI"]
+    types:
       - completed
 
 permissions:
