@@ -1,8 +1,8 @@
-name: C/C++ CI2
+name: Hello2
 
 on:
   workflow_run:
-    workflows: ["C/C++ CI"]
+    workflows: ["Hello1"]
     types:
       - completed
 
